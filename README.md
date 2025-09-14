@@ -1,4 +1,4 @@
-# UT2-TFU-andis2
+# UT2-TFU Andis II
 
 ## Pasos:
 1. npm install
