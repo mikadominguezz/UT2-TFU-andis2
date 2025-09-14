@@ -11,11 +11,15 @@
 GET http://localhost:8080/health
 
 ### LoginWithAlice
-POST http://localhost:8080/login <br />
-**Body** <br />
+POST http://localhost:8080/login
+
+**Body**
 {
+
   "username": "alice",
+  
   "password": "alicepass"
+
 }
 
 ### LoginWithAlice
