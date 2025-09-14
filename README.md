@@ -30,31 +30,31 @@ POST http://localhost:8080/login <br />
 GET http://localhost:8080/protected <br />
 **Headers** <br /> 
 Key: Authorization <br />
-Value: Bearer <Token id de Alice>
+Value: Bearer {Token id de Alice}
 
 ### ProtectedWithTokenBob
 GET http://localhost:8080/protected <br />
 **Headers** <br />
 Key: Authorization <br />
-Value: Bearer <Token id de Bob>
+Value: Bearer {Token id de Bob}
 
 ### AdminOnly
 GET http://localhost:3001/admin-only <br />
 **Headers** <br />
 Key: Authorization <br />
-Value: Bearer <Token id de Bob>
+Value: Bearer {Token id de Bob}
 
 ### ListOfProductsAlice
 GET http://localhost:8080/products <br />
 **Headers** <br />
 Key: Authorization <br />
-Value: Bearer <Token id de Alice> <br />
+Value: Bearer {Token id de Alice} <br />
 
 ### CreateProduct
 POST http://localhost:8080/products <br />
 **Headers** <br />
 Key: Authorization <br />
-Value: Bearer <Token id de Bob> <br />
+Value: Bearer {Token id de Bob} <br />
 **Body** <br />
 {
   "name": "Producto 3",
@@ -65,7 +65,7 @@ Value: Bearer <Token id de Bob> <br />
 POST http://localhost:8080/products <br />
 **Headers** <br />
 Key: Authorization <br />
-Value: Bearer <Token id de Bob> <br />
+Value: Bearer {Token id de Bob} <br />
 **Body** <br />
 {
   "name": "Producto 3",
