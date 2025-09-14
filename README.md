@@ -22,7 +22,7 @@ POST http://localhost:8080/login
 
 }
 
-### LoginWithAlice
+### LoginWithBob
 POST http://localhost:8080/login
 
 **Body** <br />
