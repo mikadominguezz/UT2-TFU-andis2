@@ -12,7 +12,7 @@ GET http://localhost:8080/health
 
 ### LoginWithAlice
 POST http://localhost:8080/login <br />
-**Body**
+**Body** <br />
 {
   "username": "alice",
   "password": "alicepass"
@@ -20,7 +20,7 @@ POST http://localhost:8080/login <br />
 
 ### LoginWithAlice
 POST http://localhost:8080/login <br />
-**Body**
+**Body** <br />
 {
   "username": "bob",
   "password": "bobpass"
