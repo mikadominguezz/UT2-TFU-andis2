@@ -1,3 +1,5 @@
+/* ===================== index.js ===================== */
+
 const cluster = require('cluster');
 const os = require('os');
 const express = require('express');
@@ -7,6 +9,7 @@ const { authenticateJWT, authorizeRoles } = require('./auth');
 const { heavyComputation } = require('./heavy');
 const cache = require('./cache');
 const users = require('./users');
+const products = require('./products');
 
 const PORT = process.env.PORT || 3000;
 const SECRET = process.env.JWT_SECRET || 'cambiame-por-una-secreta';
@@ -24,10 +27,10 @@ if (cluster.isMaster) {
   const app = express();
   app.use(bodyParser.json());
 
-  // Health check
+  /* ------------------- Health Check ------------------- */
   app.get('/health', (req, res) => res.json({ ok: true, pid: process.pid }));
 
-  // Login: devuelve JWT
+  /* ------------------- Login ------------------- */
   app.post('/login', (req, res) => {
     const { username, password } = req.body || {};
     const user = users.findByUsername(username);
@@ -39,26 +42,48 @@ if (cluster.isMaster) {
     res.json({ token });
   });
 
-  // Endpoint público
+  /* ------------------- Endpoint público ------------------- */
   app.get('/public', (req, res) => res.json({ message: 'Recurso público', pid: process.pid }));
 
-  // Endpoint protegido: autenticación requerida
+  /* ------------------- Endpoint protegido ------------------- */
   app.get('/protected', authenticateJWT(SECRET), (req, res) => {
     res.json({ message: 'Recurso protegido (autenticado)', user: req.user, pid: process.pid });
   });
 
-  // Endpoint con autorización por roles
+  /* ------------------- Endpoint admin-only ------------------- */
   app.get('/admin-only', authenticateJWT(SECRET), authorizeRoles('admin'), (req, res) => {
     res.json({ message: 'Solo admins pueden ver esto', user: req.user, pid: process.pid });
   });
 
-  // Endpoint que hace cómputo costoso: usar cache + workers (replicas ayudan rendimiento)
+  /* ------------------- Productos ------------------- */
+  // GET /products → cualquier usuario loggeado
+  app.get('/products', authenticateJWT(SECRET), (req, res) => {
+    res.json(products.getAll());
+  });
+
+  // POST /products → solo admin
+  app.post('/products', authenticateJWT(SECRET), authorizeRoles('admin'), (req, res) => {
+    const { name, price } = req.body;
+    if (!name || price === undefined) return res.status(400).json({ error: 'Faltan datos' });
+    const product = products.create({ name, price });
+    res.status(201).json(product);
+  });
+
+  // PUT /products/:id → solo admin
+  app.put('/products/:id', authenticateJWT(SECRET), authorizeRoles('admin'), (req, res) => {
+    const { id } = req.params;
+    const { name, price } = req.body;
+    const updated = products.update(id, { name, price });
+    if (!updated) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json(updated);
+  });
+
+  /* ------------------- Cómputo costoso con cache ------------------- */
   app.get('/compute', async (req, res) => {
     const key = 'heavy-result-v1';
     const cached = cache.get(key);
     if (cached) return res.json({ fromCache: true, value: cached, pid: process.pid });
 
-    // si no está en cache, calcular y almacenar
     try {
       const value = await heavyComputation();
       cache.set(key, value);
@@ -68,11 +93,12 @@ if (cluster.isMaster) {
     }
   });
 
-  // Endpoint admin para invalidar cache (ej: después de actualización)
+  /* ------------------- Admin: invalidar cache ------------------- */
   app.post('/admin/cache/invalidate', authenticateJWT(SECRET), authorizeRoles('admin'), (req, res) => {
     cache.clear();
     res.json({ ok: true });
   });
 
+  /* ------------------- Iniciar servidor ------------------- */
   app.listen(PORT, () => console.log(`Worker pid=${process.pid} escuchando en ${PORT}`));
 }
