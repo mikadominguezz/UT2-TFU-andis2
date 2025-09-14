@@ -13,65 +13,89 @@ GET http://localhost:8080/health
 ### LoginWithAlice
 POST http://localhost:8080/login
 
-**Body**
+**Body** <br />
 {
 
   "username": "alice",
-  
+
   "password": "alicepass"
 
 }
 
 ### LoginWithAlice
-POST http://localhost:8080/login <br />
+POST http://localhost:8080/login
+
 **Body** <br />
 {
+
   "username": "bob",
+
   "password": "bobpass"
+
 }
 
 ### ProtectedWithTokenAlice
-GET http://localhost:8080/protected <br />
-**Headers** <br /> 
-Key: Authorization <br />
-Value: Bearer {Token id de Alice}
+GET http://localhost:8080/protected
+
+**Headers**
+
+- Key: Authorization
+- Value: Bearer {Token id de Alice}
 
 ### ProtectedWithTokenBob
-GET http://localhost:8080/protected <br />
-**Headers** <br />
-Key: Authorization <br />
-Value: Bearer {Token id de Bob}
+GET http://localhost:8080/protected
+
+**Headers**
+
+- Key: Authorization
+- Value: Bearer {Token id de Bob}
 
 ### AdminOnly
-GET http://localhost:3001/admin-only <br />
-**Headers** <br />
-Key: Authorization <br />
-Value: Bearer {Token id de Bob}
+GET http://localhost:3001/admin-only
+
+**Headers**
+
+- Key: Authorization
+- Value: Bearer {Token id de Bob}
 
 ### ListOfProductsAlice
-GET http://localhost:8080/products <br />
-**Headers** <br />
-Key: Authorization <br />
-Value: Bearer {Token id de Alice} <br />
+GET http://localhost:8080/products
+
+**Headers**
+
+- Key: Authorization
+- Value: Bearer {Token id de Alice}
 
 ### CreateProduct
-POST http://localhost:8080/products <br />
-**Headers** <br />
-Key: Authorization <br />
-Value: Bearer {Token id de Bob} <br />
+POST http://localhost:8080/products
+
+**Headers**
+
+- Key: Authorization
+- Value: Bearer {Token id de Bob}
+
 **Body** <br />
 {
+
   "name": "Producto 3",
+
   "price": 300
+
 }
 
 ### ModifyProduct
-POST http://localhost:8080/products <br />
-**Headers** <br />
-Key: Authorization <br />
-Value: Bearer {Token id de Bob} <br />
+POST http://localhost:8080/products
+
+**Headers**
+
+- Key: Authorization
+- Value: Bearer {Token id de Bob}
+
 **Body** <br />
 {
+    
   "name": "Producto 3",
+
   "price": 300
+
 }
