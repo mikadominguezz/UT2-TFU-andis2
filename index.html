@@ -14,8 +14,8 @@
 
   <h2>2. Login</h2>
   <div>
-    <label>Username: <input id="username" value="alice"></label><br>
-    <label>Password: <input id="password" type="password" value="alicepass"></label><br>
+    <label>Username: <input id="username" value=""></label><br>
+    <label>Password: <input id="password" type="password" value=""></label><br>
     <button onclick="login()">POST /login</button>
   </div>
   <pre id="loginResult"></pre>
@@ -24,10 +24,15 @@
   <button onclick="getProtected()">GET /protected (Alice)</button>
   <pre id="protected"></pre>
 
-  <h2>4. Admin-only</h2>
-  <button onclick="loginBob()">Login Bob</button>
-  <button onclick="getAdmin()">GET /admin-only (Bob)</button>
+  <h2>4. Admin Login</h2>
+  <div>
+    <label>Username: <input id="adminUsername" value=""></label><br>
+    <label>Password: <input id="adminPassword" type="password" value=""></label><br>
+    <button onclick="loginAdmin()">POST /login (Admin)</button>
+    <button onclick="getAdmin()">GET /admin-only (Bob)</button>
+  </div>
   <pre id="admin"></pre>
+
 
 <script>
 const API_BASE = 'http://localhost:8080'; // Puerto de Nginx
@@ -59,16 +64,36 @@ async function login() {
 }
 
 
-async function loginBob() {
-  const res = await fetch(`${API_BASE}/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: 'bob', password: 'bobpass' })
-  });
-  const data = await res.json();
-  document.getElementById('admin').textContent = 'Bob logged in, token stored';
-  tokenBob = data.token;
+async function loginAdmin() {
+  const username = document.getElementById('adminUsername').value;
+  const password = document.getElementById('adminPassword').value;
+
+  if (!username || !password) {
+    alert('Por favor ingresa username y password');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.token) {
+      tokenBob = data.token; // puedes renombrar a tokenAdmin si quieres
+      document.getElementById('admin').textContent = `Admin ${username} logged in, token stored`;
+    } else {
+      document.getElementById('admin').textContent = JSON.stringify(data, null, 2);
+      alert('Error en login: Credenciales inválidas');
+    }
+  } catch(err) {
+    console.error(err);
+    alert('Error en login: ' + err.message);
+  }
 }
+
 
 async function getProtected() {
   if (!tokenAlice) { alert('Primero haz login con Alice'); return; }
