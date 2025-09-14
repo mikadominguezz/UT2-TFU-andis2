@@ -1,5 +1,5 @@
 # UT2-TFU Andis II
 
-## Pasos:
+## Pasos para correrlo:
 1. npm install
-2. docker-compose up --build
+2. docker compose up --build
