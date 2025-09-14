@@ -11,7 +11,7 @@
 GET http://localhost:8080/health
 
 ### LoginWithAlice
-POST http://localhost:8080/login
+POST http://localhost:8080/login <br />
 **Body**
 {
   "username": "alice",
@@ -19,7 +19,7 @@ POST http://localhost:8080/login
 }
 
 ### LoginWithAlice
-POST http://localhost:8080/login
+POST http://localhost:8080/login <br />
 **Body**
 {
   "username": "bob",
@@ -27,46 +27,46 @@ POST http://localhost:8080/login
 }
 
 ### ProtectedWithTokenAlice
-GET http://localhost:8080/protected
-**Headers**
-Key: Authorization
+GET http://localhost:8080/protected <br />
+**Headers** <br /> 
+Key: Authorization <br />
 Value: Bearer <Token id de Alice>
 
 ### ProtectedWithTokenBob
-GET http://localhost:8080/protected
-**Headers**
-Key: Authorization
+GET http://localhost:8080/protected <br />
+**Headers** <br />
+Key: Authorization <br />
 Value: Bearer <Token id de Bob>
 
 ### AdminOnly
-GET http://localhost:3001/admin-only
-**Headers**
-Key: Authorization
+GET http://localhost:3001/admin-only <br />
+**Headers** <br />
+Key: Authorization <br />
 Value: Bearer <Token id de Bob>
 
 ### ListOfProductsAlice
-GET http://localhost:8080/products
-**Headers**
-Key: Authorization
-Value: Bearer <Token id de Alice>
+GET http://localhost:8080/products <br />
+**Headers** <br />
+Key: Authorization <br />
+Value: Bearer <Token id de Alice> <br />
 
 ### CreateProduct
-POST http://localhost:8080/products
-**Headers**
-Key: Authorization
-Value: Bearer <Token id de Bob>
-**Body**
+POST http://localhost:8080/products <br />
+**Headers** <br />
+Key: Authorization <br />
+Value: Bearer <Token id de Bob> <br />
+**Body** <br />
 {
   "name": "Producto 3",
   "price": 300
 }
 
 ### ModifyProduct
-POST http://localhost:8080/products
-**Headers**
-Key: Authorization
-Value: Bearer <Token id de Bob>
-**Body**
+POST http://localhost:8080/products <br />
+**Headers** <br />
+Key: Authorization <br />
+Value: Bearer <Token id de Bob> <br />
+**Body** <br />
 {
   "name": "Producto 3",
   "price": 300
