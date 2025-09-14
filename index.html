@@ -37,6 +37,7 @@
 
   <button onclick="getProducts()">GET /products (ver listado)</button>
   <pre id="products"></pre>
+  <pre id="productsLatency"></pre>
 
   <h3>Agregar/Modificar Producto (Admin)</h3>
   <div>
@@ -130,11 +131,17 @@ async function getAdmin() {
 async function getProducts() {
   const token = tokenAlice || tokenBob;
   if (!token) { alert('Primero haz login'); return; }
+  
+  const start = performance.now();
   const res = await fetch(`${API_BASE}/products`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
+  const end = performance.now();
+  const latency = end - start;
+
   const data = await res.json();
   document.getElementById('products').textContent = JSON.stringify(data, null, 2);
+  document.getElementById('productsLatency').textContent = `Tiempo de respuesta: ${latency.toFixed(2)} ms`;
 }
 
 async function saveProduct() {
