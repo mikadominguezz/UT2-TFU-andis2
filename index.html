@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Demo API Client</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; max-width: 800px; }
+  button { margin: 5px 0; }
+  input { margin: 5px 0; width: 200px; }
+  pre { background: #f4f4f4; padding: 10px; }
+  hr { margin: 20px 0; }
+</style>
+</head>
+<body>
+  <h1>API Demo Client</h1>
+
+  <h2>1. Health Check</h2>
+  <button onclick="getHealth()">GET /health</button>
+  <pre id="health"></pre>
+
+  <h2>2. Login</h2>
+  <div>
+    <label>Username: <input id="username" value="alice"></label><br>
+    <label>Password: <input id="password" type="password" value="alicepass"></label><br>
+    <button onclick="login()">POST /login</button>
+  </div>
+  <pre id="loginResult"></pre>
+
+  <h2>3. Protected</h2>
+  <button onclick="getProtected()">GET /protected (Alice)</button>
+  <pre id="protected"></pre>
+
+  <h2>4. Admin-only</h2>
+  <button onclick="loginBob()">Login Bob</button>
+  <button onclick="getAdmin()">GET /admin-only (Bob)</button>
+  <pre id="admin"></pre>
+
+<script>
+const API_BASE = 'http://localhost:8080'; // Puerto de Nginx
+let tokenAlice = '';
+let tokenBob = '';
+
+async function getHealth() {
+  const res = await fetch(`${API_BASE}/health`);
+  document.getElementById('health').textContent = JSON.stringify(await res.json(), null, 2);
+}
+
+async function login() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  try {
+    const res = await fetch(`${API_BASE}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    console.log('Login response:', data);
+    document.getElementById('loginResult').textContent = JSON.stringify(data, null, 2);
+    if (username === 'alice') tokenAlice = data.token;
+  } catch(err) {
+    console.error(err);
+    alert('Error en login: ' + err.message);
+  }
+}
+
+
+async function loginBob() {
+  const res = await fetch(`${API_BASE}/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: 'bob', password: 'bobpass' })
+  });
+  const data = await res.json();
+  document.getElementById('admin').textContent = 'Bob logged in, token stored';
+  tokenBob = data.token;
+}
+
+async function getProtected() {
+  if (!tokenAlice) { alert('Primero haz login con Alice'); return; }
+  const res = await fetch(`${API_BASE}/protected`, {
+    headers: { 'Authorization': `Bearer ${tokenAlice}` }
+  });
+  document.getElementById('protected').textContent = JSON.stringify(await res.json(), null, 2);
+}
+
+async function getAdmin() {
+  if (!tokenBob) { alert('Primero haz login con Bob'); return; }
+  const res = await fetch(`${API_BASE}/admin-only`, {
+    headers: { 'Authorization': `Bearer ${tokenBob}` }
+  });
+  document.getElementById('admin').textContent = JSON.stringify(await res.json(), null, 2);
+}
+</script>
+</body>
+</html>
