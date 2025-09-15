@@ -7,7 +7,6 @@ function authenticateJWT(secret) {
     const token = auth.slice('Bearer '.length);
     jwtLib.verify(token, secret, (err, payload) => {
       if (err) return res.status(401).json({ error: 'Token inválido' });
-      // attach minimal user info to request
       req.user = { id: payload.sub, username: payload.username, roles: payload.roles || [] };
       next();
     });

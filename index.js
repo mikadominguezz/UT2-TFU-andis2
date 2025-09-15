@@ -1,5 +1,3 @@
-/* ===================== index.js ===================== */
-
 const cluster = require('cluster');
 const os = require('os');
 const express = require('express');
@@ -12,6 +10,9 @@ const users = require('./users');
 const products = require('./products');
 
 const PORT = process.env.PORT || 3000;
+// acá podría haberlo definido en docker-compose.yml y despues en un archivo .env poner la clave
+// para así después poner este codigo en la terminal: docker compose --env-file .env up --build
+// pero decidimos hacerla hardcodeada.
 const SECRET = process.env.JWT_SECRET || 'cambiame-por-una-secreta';
 
 if (cluster.isMaster) {
@@ -27,10 +28,10 @@ if (cluster.isMaster) {
   const app = express();
   app.use(bodyParser.json());
 
-  /* ------------------- Health Check ------------------- */
+  // HealthCheck
   app.get('/health', (req, res) => res.json({ ok: true, pid: process.pid }));
 
-  /* ------------------- Login ------------------- */
+  // Login
   app.post('/login', (req, res) => {
     const { username, password } = req.body || {};
     const user = users.findByUsername(username);
@@ -42,26 +43,21 @@ if (cluster.isMaster) {
     res.json({ token });
   });
 
-  /* ------------------- Endpoint público ------------------- */
   app.get('/public', (req, res) => res.json({ message: 'Recurso público', pid: process.pid }));
 
-  /* ------------------- Endpoint protegido ------------------- */
   app.get('/protected', authenticateJWT(SECRET), (req, res) => {
     res.json({ message: 'Recurso protegido (autenticado)', user: req.user, pid: process.pid });
   });
 
-  /* ------------------- Endpoint admin-only ------------------- */
   app.get('/admin-only', authenticateJWT(SECRET), authorizeRoles('admin'), (req, res) => {
     res.json({ message: 'Solo admins pueden ver esto', user: req.user, pid: process.pid });
   });
 
-  /* ------------------- Productos ------------------- */
-  // GET /products → cualquier usuario loggeado
+  // products
   app.get('/products', authenticateJWT(SECRET), (req, res) => {
     res.json(products.getAll());
   });
 
-  // POST /products → solo admin
   app.post('/products', authenticateJWT(SECRET), authorizeRoles('admin'), (req, res) => {
     const { name, price } = req.body;
     if (!name || price === undefined) return res.status(400).json({ error: 'Faltan datos' });
@@ -69,7 +65,6 @@ if (cluster.isMaster) {
     res.status(201).json(product);
   });
 
-  // PUT /products/:id → solo admin
   app.put('/products/:id', authenticateJWT(SECRET), authorizeRoles('admin'), (req, res) => {
     const { id } = req.params;
     const { name, price } = req.body;
@@ -98,7 +93,6 @@ if (cluster.isMaster) {
     cache.clear();
     res.json({ ok: true });
   });
-
-  /* ------------------- Iniciar servidor ------------------- */
+  
   app.listen(PORT, () => console.log(`Worker pid=${process.pid} escuchando en ${PORT}`));
 }
