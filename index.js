@@ -4,8 +4,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const { authenticateJWT, authorizeRoles } = require('./auth');
-const { heavyComputation } = require('./heavy');
-const cache = require('./cache');
+// const { heavyComputation } = require('./heavy');
+// const cache = require('./cache');
 const users = require('./users');
 const products = require('./products');
 
@@ -74,25 +74,25 @@ if (cluster.isMaster) {
   });
 
   /* ------------------- Cómputo costoso con cache ------------------- */
-  app.get('/compute', async (req, res) => {
-    const key = 'heavy-result-v1';
-    const cached = cache.get(key);
-    if (cached) return res.json({ fromCache: true, value: cached, pid: process.pid });
+  // app.get('/compute', async (req, res) => {
+  //   const key = 'heavy-result-v1';
+  //   const cached = cache.get(key);
+  //   if (cached) return res.json({ fromCache: true, value: cached, pid: process.pid });
 
-    try {
-      const value = await heavyComputation();
-      cache.set(key, value);
-      res.json({ fromCache: false, value, pid: process.pid });
-    } catch (err) {
-      res.status(500).json({ error: 'error en cómputo', details: err.message });
-    }
-  });
+  //   try {
+  //     const value = await heavyComputation();
+  //     cache.set(key, value);
+  //     res.json({ fromCache: false, value, pid: process.pid });
+  //   } catch (err) {
+  //     res.status(500).json({ error: 'error en cómputo', details: err.message });
+  //   }
+  // });
 
-  /* ------------------- Admin: invalidar cache ------------------- */
-  app.post('/admin/cache/invalidate', authenticateJWT(SECRET), authorizeRoles('admin'), (req, res) => {
-    cache.clear();
-    res.json({ ok: true });
-  });
-  
+  // /* ------------------- Admin: invalidar cache ------------------- */
+  // app.post('/admin/cache/invalidate', authenticateJWT(SECRET), authorizeRoles('admin'), (req, res) => {
+  //   cache.clear();
+  //   res.json({ ok: true });
+  // });
+
   app.listen(PORT, () => console.log(`Worker pid=${process.pid} escuchando en ${PORT}`));
 }
