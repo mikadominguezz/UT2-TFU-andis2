@@ -84,7 +84,7 @@ POST http://localhost:8080/products
 }
 
 ### ModifyProduct
-POST http://localhost:8080/products
+PUT http://localhost:8080/products/p1
 
 **Headers**
 
